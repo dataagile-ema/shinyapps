@@ -44,14 +44,9 @@ houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, 3, 40)
 
 ui <- fluidPage(
   
-  # Sidebar layout with a input and output definitions
   sidebarLayout(
-    
-    
-    sidebarPanel(
-      
 
-      
+      sidebarPanel(
       # --- Update model ----
       tags$div( # headline
         HTML('<h4 style="color:#000;margin-left:0px;">Träna modell</h4>')
@@ -104,8 +99,7 @@ server <- function(input, output, session) {
     HTML("<font face='Courier New' style = font-size:16px>","<font color='#00BFFF'>", "<b>", text0,"</font>", "</b>", text1, "<br>", text2, "<br>", "<font color='#27e833'>", "<b>", "Tränindsdata", "</b>", "</font>")
   })
   
-  #style = font-size:15px>
-  
+
   output$plotByHouseNo <-renderPlot({
     t1 <- ggplot(modelData$houseData_Errors_Gradients, aes(x = houseNumber)) 
     t2 <- t1  + geom_point(color='#00BFFF', aes(y = prediction, size = 30)) 
