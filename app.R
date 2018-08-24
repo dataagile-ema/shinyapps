@@ -61,7 +61,7 @@ ui <- fluidPage(
       #  HTML('<hr style="height:1px; border:none; color:#000; background-color:#000;">')
       #),
       htmlOutput(outputId = "updateModelText"),
-      actionButton("train_button", "Uppdatera modell")
+      actionButton("train_button", "Uppdatera modell", width = 150)
     ),
     
     
@@ -70,7 +70,7 @@ ui <- fluidPage(
       htmlOutput(outputId = "modelText"),
       plotOutput(outputId = "plotByHouseNo"), #, width = "100%", height = "200px"),
       htmlOutput(outputId = "roundText"),
-      actionButton("reset_button", "Återställ modell")
+      actionButton("reset_button", "Återställ modell", width = 150)
       
     )
     
@@ -98,12 +98,14 @@ server <- function(input, output, session) {
   output$modelText <- renderUI({
     
     modelData$houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, modelData$weight, modelData$bias)
-    text1 <- paste("Modell: Estimat huspris = (k * boyta)  + m")
-    text2 <- paste("k = ", format((modelData$weight), digits = 2),", ", "m = ", format((modelData$bias), digits = 0))
-    HTML(text1, "<br>", text2)
+    text0 <- paste("Modell:")
+    text1 <- paste("Pris = k * boyta + m")
+    text2 <- paste("k = ", format((modelData$weight), digits = 2), "",'&nbsp;', "m = ", format((modelData$bias), digits = 0))
+    HTML("<font face='Courier New' style = font-size:16px>","<font color='#00BFFF'>", "<b>", text0,"</font>", "</b>", text1, "<br>", text2, "<br>", "<font color='#27e833'>", "<b>", "Tränindsdata", "</b>", "</font>")
   })
   
-
+  #style = font-size:15px>
+  
   output$plotByHouseNo <-renderPlot({
     t1 <- ggplot(modelData$houseData_Errors_Gradients, aes(x = houseNumber)) 
     t2 <- t1  + geom_point(color='#00BFFF', aes(y = prediction, size = 30)) 
@@ -114,7 +116,7 @@ server <- function(input, output, session) {
   
   output$roundText <- renderUI({
     
-    text <- paste("Träningsrunda: ", modelData$increment)
+    text <- paste("<font face='Courier New' style = font-size:16px>", "Träningsrunda: ", modelData$increment)
     HTML(text)
   })
   
@@ -125,11 +127,11 @@ server <- function(input, output, session) {
     
     modelData$houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, modelData$weight, modelData$bias)
     
-    weightText <- paste("Justera k med",format(incrementWieght(), digits = 2)) #, "<br>")#, "Nytt värde för k", format(incrementWieght(), digits = 2), "+", format(modelData$weight, digits = 2), "<b>", "=", format(modelData$weight +incrementWieght(), digits = 2), "</b>")
-    biasText <- paste("Justera m med",format(incrementBias(), digits = 2),"<br>")#, "Nytt värde för m", format(incrementBias(), digits = 2), "+", format(modelData$bias, digits = 2), "=", "<b>", format(modelData$bias +incrementBias(), digits = 2), "</b>")
+    weightText <- paste("Justera k med:",format(incrementWieght(), digits = 2)) #, "<br>")#, "Nytt värde för k", format(incrementWieght(), digits = 2), "+", format(modelData$weight, digits = 2), "<b>", "=", format(modelData$weight +incrementWieght(), digits = 2), "</b>")
+    biasText <- paste("Justera m med:",format(incrementBias(), digits = 2),"<br>")#, "Nytt värde för m", format(incrementBias(), digits = 2), "+", format(modelData$bias, digits = 2), "=", "<b>", format(modelData$bias +incrementBias(), digits = 2), "</b>")
     
     
-    HTML(weightText, "<br>", biasText)
+    HTML("<font face='Courier New' style = font-size:16px>", weightText, "<br>", biasText )
   })
   
   observeEvent(input$train_button, {
