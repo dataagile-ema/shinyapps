@@ -47,18 +47,18 @@ houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, 3, 40)
 ui <- fluidPage(
   
   sidebarLayout(
-
-      sidebarPanel(
+    
+    sidebarPanel(
       # --- Update model ----
       tags$div( # headline
-        HTML('<h4 style="color:#000;margin-left:0px;">Träna modell</h4>')
+        HTML('<h4 style="color:#000;margin-left:0px;">Train model</h4>')
       ),
       
       #tags$div( # partition
       #  HTML('<hr style="height:1px; border:none; color:#000; background-color:#000;">')
       #),
       htmlOutput(outputId = "updateModelText"),
-      actionButton("train_button", "Uppdatera modell", width = 150)
+      actionButton("train_button", "Update model", width = 150)
     ),
     
     
@@ -67,7 +67,7 @@ ui <- fluidPage(
       htmlOutput(outputId = "modelText"),
       plotOutput(outputId = "plotByHouseNo"), #, width = "100%", height = "200px"),
       htmlOutput(outputId = "roundText"),
-      actionButton("reset_button", "Återställ modell", width = 150)
+      actionButton("reset_button", "Reset model", width = 150)
       
     )
     
@@ -90,41 +90,41 @@ server <- function(input, output, session) {
     calcIncrementBias(modelData$houseData_Errors_Gradients, modelData$weight)
   })
   
-
+  
   # --- Visualize model
   output$modelText <- renderUI({
     
     modelData$houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, modelData$weight, modelData$bias)
-    text0 <- paste("Modell:")
-    text1 <- paste("Pris = k * boyta + m")
+    text0 <- paste("Model:")
+    text1 <- paste("Price = k * space + m")
     text2 <- paste("k = ", format((modelData$weight), digits = 2), "",'&nbsp;', "m = ", format((modelData$bias), digits = 0))
-    HTML("<font face='Courier New' style = font-size:16px>","<font color='#00BFFF'>", "<b>", text0,"</font>", "</b>", text1, "<br>", text2, "<br>", "<font color='#27e833'>", "<b>", "Träningsdata", "</b>", "</font>")
+    HTML("<font face='Courier New' style = font-size:16px>","<font color='#00BFFF'>", "<b>", text0,"</font>", "</b>", text1, "<br>", text2, "<br>", "<font color='#27e833'>", "<b>", "Training data", "</b>", "</font>")
   })
   
-
+  
   output$plotByHouseNo <-renderPlot({
     t1 <- ggplot(modelData$houseData_Errors_Gradients, aes(x = houseNumber)) 
     t2 <- t1  + geom_point(color='#00BFFF', aes(y = prediction, size = 30)) 
     t3 <- t2  + geom_point(color = '#27e833', aes(y = price, size = 30)) + xlim(1,5) + ylim(1000, 16000) + theme_bw()
-    t4 <- t3 + labs( x = "Hus", y = "Pris") 
+    t4 <- t3 + labs( x = "House no", y = "Price") 
     t4 + theme(legend.position = "none", text = element_text(size=16))
   })
   
   output$roundText <- renderUI({
     
-    text <- paste("<font face='Courier New' style = font-size:16px>", "Träningsrunda: ", modelData$increment)
+    text <- paste("<font face='Courier New' style = font-size:16px>", "Training round: ", modelData$increment)
     HTML(text)
   })
   
-    
+  
   
   #--- Update model ---
   output$updateModelText <- renderUI({
     
     modelData$houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, modelData$weight, modelData$bias)
     
-    weightText <- paste("Justera k med:",format(incrementWieght(), digits = 2)) #, "<br>")#, "Nytt värde för k", format(incrementWieght(), digits = 2), "+", format(modelData$weight, digits = 2), "<b>", "=", format(modelData$weight +incrementWieght(), digits = 2), "</b>")
-    biasText <- paste("Justera m med:",format(incrementBias(), digits = 2),"<br>")#, "Nytt värde för m", format(incrementBias(), digits = 2), "+", format(modelData$bias, digits = 2), "=", "<b>", format(modelData$bias +incrementBias(), digits = 2), "</b>")
+    weightText <- paste("Adjust k by:",format(incrementWieght(), digits = 2)) #, "<br>")#, "New value for k", format(incrementWieght(), digits = 2), "+", format(modelData$weight, digits = 2), "<b>", "=", format(modelData$weight +incrementWieght(), digits = 2), "</b>")
+    biasText <- paste("Adjust m by:",format(incrementBias(), digits = 2),"<br>")#, "New value for m", format(incrementBias(), digits = 2), "+", format(modelData$bias, digits = 2), "=", "<b>", format(modelData$bias +incrementBias(), digits = 2), "</b>")
     
     
     HTML("<font face='Courier New' style = font-size:16px>", weightText, "<br>", biasText )

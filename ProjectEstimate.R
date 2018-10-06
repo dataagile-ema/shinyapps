@@ -4,54 +4,50 @@ library(shiny)
 library(tidyverse)
 
 
-houseData <- dplyr::tibble(houseNumber = c(1, 2, 3, 4, 5), squareSpace = c(20,40, 80, 90, 120), price = c(5000, 7000, 10500, 12000, 15000))
+priors <- dplyr::tibble(workItem = c(1, 2, 3, 4, 5), estmimates = c(20,40, 80, 90, 120), price = c(5000, 7000, 10500, 12000, 15000))
 n = 5
 
 
-LearningRate = 0.0001
-
-
-calcErrorsAndGradients <- function(houseData, weight, bias) {
+#LearningRate = 0.0001
+#calcErrorsAndGradients <- function(houseData, weight, bias) {
   
-  houseData_Errors_Gradients <- houseData %>%
-    mutate(prediction = weight * squareSpace + bias) %>%
-    mutate(error = prediction - price) %>%
-    mutate(weightGradient = error * squareSpace) %>%
-    mutate(gradientBias = error) %>%
-    mutate(errrorSquared = error ^ 2)
-  
-  return (houseData_Errors_Gradients)
-}
+#  houseData_Errors_Gradients <- houseData %>%
+#    mutate(prediction = weight * squareSpace + bias) %>%
+#    mutate(error = prediction - price) %>%
+#    mutate(weightGradient = error * squareSpace) %>%
+#    mutate(gradientBias = error) %>%
+#    mutate(errrorSquared = error ^ 2)
+#
+#  return (houseData_Errors_Gradients)
+#}
 
 
-calcIncrementWeight <- function(houseData_Errors_Gradients, weight) {
-  
-  increment <- houseData_Errors_Gradients %>%
-    summarize(incrementWeight = -sum(houseData_Errors_Gradients$weightGradient) / n * LearningRate)
-  
-  return(increment$incrementWeight)
-}
+#calcIncrementWeight <- function(houseData_Errors_Gradients, weight) {
+#  
+#  increment <- houseData_Errors_Gradients %>%
+#    summarize(incrementWeight = -sum(houseData_Errors_Gradients$weightGradient) / n * LearningRate)
+#  
+#  return(increment$incrementWeight)
+#}
 
-calcIncrementBias <- function(houseData_Errors_Gradients, bias) {
-  
-  increment <- houseData_Errors_Gradients %>%
-    summarize(incrementBias = -sum(houseData_Errors_Gradients$gradientBias) / n * LearningRate * 1000)
-  
-  return(increment$incrementBias)
-}
+#calcIncrementBias <- function(houseData_Errors_Gradients, bias) {
+#  
+#  increment <- houseData_Errors_Gradients %>%
+#    summarize(incrementBias = -sum(houseData_Errors_Gradients$gradientBias) / n * LearningRate * 1000)
+#  
+#  return(increment$incrementBias)
+#}
 
-
-
-houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, 3, 40)
+#houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, 3, 40)
 
 ui <- fluidPage(
   
   sidebarLayout(
-
-      sidebarPanel(
+    
+    sidebarPanel(
       # --- Update model ----
       tags$div( # headline
-        HTML('<h4 style="color:#000;margin-left:0px;">Tr√§na modell</h4>')
+        HTML('<h4 style="color:#000;margin-left:0px;">Tr‰na modell</h4>')
       ),
       
       #tags$div( # partition
@@ -67,7 +63,7 @@ ui <- fluidPage(
       htmlOutput(outputId = "modelText"),
       plotOutput(outputId = "plotByHouseNo"), #, width = "100%", height = "200px"),
       htmlOutput(outputId = "roundText"),
-      actionButton("reset_button", "√Öterst√§ll modell", width = 150)
+      actionButton("reset_button", "≈terst‰ll modell", width = 150)
       
     )
     
@@ -90,7 +86,7 @@ server <- function(input, output, session) {
     calcIncrementBias(modelData$houseData_Errors_Gradients, modelData$weight)
   })
   
-
+  
   # --- Visualize model
   output$modelText <- renderUI({
     
@@ -98,10 +94,10 @@ server <- function(input, output, session) {
     text0 <- paste("Modell:")
     text1 <- paste("Pris = k * boyta + m")
     text2 <- paste("k = ", format((modelData$weight), digits = 2), "",'&nbsp;', "m = ", format((modelData$bias), digits = 0))
-    HTML("<font face='Courier New' style = font-size:16px>","<font color='#00BFFF'>", "<b>", text0,"</font>", "</b>", text1, "<br>", text2, "<br>", "<font color='#27e833'>", "<b>", "Tr√§ningsdata", "</b>", "</font>")
+    HTML("<font face='Courier New' style = font-size:16px>","<font color='#00BFFF'>", "<b>", text0,"</font>", "</b>", text1, "<br>", text2, "<br>", "<font color='#27e833'>", "<b>", "Tr‰ningsdata", "</b>", "</font>")
   })
   
-
+  
   output$plotByHouseNo <-renderPlot({
     t1 <- ggplot(modelData$houseData_Errors_Gradients, aes(x = houseNumber)) 
     t2 <- t1  + geom_point(color='#00BFFF', aes(y = prediction, size = 30)) 
@@ -112,19 +108,19 @@ server <- function(input, output, session) {
   
   output$roundText <- renderUI({
     
-    text <- paste("<font face='Courier New' style = font-size:16px>", "Tr√§ningsrunda: ", modelData$increment)
+    text <- paste("<font face='Courier New' style = font-size:16px>", "Tr‰ningsrunda: ", modelData$increment)
     HTML(text)
   })
   
-    
+  
   
   #--- Update model ---
   output$updateModelText <- renderUI({
     
     modelData$houseData_Errors_Gradients <- calcErrorsAndGradients(houseData, modelData$weight, modelData$bias)
     
-    weightText <- paste("Justera k med:",format(incrementWieght(), digits = 2)) #, "<br>")#, "Nytt v√§rde f√∂r k", format(incrementWieght(), digits = 2), "+", format(modelData$weight, digits = 2), "<b>", "=", format(modelData$weight +incrementWieght(), digits = 2), "</b>")
-    biasText <- paste("Justera m med:",format(incrementBias(), digits = 2),"<br>")#, "Nytt v√§rde f√∂r m", format(incrementBias(), digits = 2), "+", format(modelData$bias, digits = 2), "=", "<b>", format(modelData$bias +incrementBias(), digits = 2), "</b>")
+    weightText <- paste("Justera k med:",format(incrementWieght(), digits = 2)) #, "<br>")#, "Nytt v‰rde fˆr k", format(incrementWieght(), digits = 2), "+", format(modelData$weight, digits = 2), "<b>", "=", format(modelData$weight +incrementWieght(), digits = 2), "</b>")
+    biasText <- paste("Justera m med:",format(incrementBias(), digits = 2),"<br>")#, "Nytt v‰rde fˆr m", format(incrementBias(), digits = 2), "+", format(modelData$bias, digits = 2), "=", "<b>", format(modelData$bias +incrementBias(), digits = 2), "</b>")
     
     
     HTML("<font face='Courier New' style = font-size:16px>", weightText, "<br>", biasText )
